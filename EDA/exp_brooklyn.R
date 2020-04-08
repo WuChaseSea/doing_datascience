@@ -34,3 +34,19 @@ hist(bk$sale.price.n)
 hist(bk$sale.price.n[sale.price.n>0])
 hist(bk$gross.sqft[sale.price.n==0])
 detach()
+
+# 只保留有价值的订单
+bk.sale <- bk[bk$sale.price.n!=0,]
+plot(bk.sale$gross.sqft, bk.sale$sale.price.n)
+plot(log(bk.sale$gross.sqft), log(bk.sale$sale.price.n))
+
+## 在有价值的订单中查看家庭住宅的信息
+bk.homes <- bk.sale[
+  which(grepl("FAMILY", bk.sale$building.class.category)),
+]
+summary(bk.homes)
+plot(log(bk.homes$gross.sqft), log(bk.homes$sale.price.n))
+## 去除bk.homes中那些看起来不像真实订单的奇异值
+bk.homes$outliers <- (log(bk.homes$sale.price.n) <= 10) + 0
+bk.homes <- bk.homes[which(bk.homes$outliers==0),]
+plot(log(bk.homes$gross.sqft), log(bk.homes$sale.price.n))
